@@ -7,11 +7,17 @@ class Solution(SolutionABC):
 
     def solve(self) -> any:
         target = 2020
-        values = list(self.resource_lines("input", int))
-        for i in range(len(values)):
-            for j in range(i + 1, len(values)):
-                for l in range(j + 1, len(values)):
-                    if values[i] + values[j] + values[l] == target:
-                        return values[i] * values[j] * values[l]
+        values = sorted(self.resource_lines("input", int))
+        for l in range(len(values)):
+            i = l + 1
+            j = len(values) - 1
+            while i < j:
+                actual = values[l] + values[i] + values[j]
+                if actual == target:
+                    return values[l] * values[i] * values[j]
+                elif actual < target:
+                    i += 1
+                elif actual > target:
+                    j -= 1
 
         raise NoSolutionError()

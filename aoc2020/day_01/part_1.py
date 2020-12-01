@@ -9,7 +9,7 @@ class Solution(SolutionABC):
         target = 2020
         values = sorted(self.resource_lines("input", int))
         i, j = 0, len(values) - 1
-        while i != j:
+        while i < j:
             actual = values[i] + values[j]
             if actual == target:
                 return values[i] * values[j]
