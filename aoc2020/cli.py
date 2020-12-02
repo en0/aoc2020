@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from time import perf_counter
 from importlib import import_module
 from os.path import dirname, basename, join as join_path
 from .errors import NoSolutionError
@@ -48,7 +49,10 @@ def main():
             show("Unable to find a solution.")
             exit(1)
 
+    perf_counter()
     if opts.check:
         run_check()
     else:
         run_solve()
+    print(f"[+] Perf: {perf_counter()}")
+
