@@ -11,21 +11,24 @@ def get_opts():
     ap.add_argument("--test", action="store_true", default=False, help="Runs using test input.")
     ap.add_argument("--check", action="store_true", default=False, help="Runs using test input and checks result with "
                                                                         "expected.")
+    ap.add_argument("--args", nargs='*', help="Pass additional arguments to the solution.")
     ap.add_argument("DAY", choices=[str(i) for i in range(1, 26)], help="The Day")
     ap.add_argument("PART", choices=['1', '2'], help="The Part")
     return ap.parse_args()
 
 
-def build_solution(day, part, testing=False) -> SolutionABC:
+def build_solution(day, part, testing=False, *args, **kwargs) -> SolutionABC:
     module = import_module(f".day_{day.zfill(2)}.part_{part}", "aoc2020")
     module_path = dirname(module.__file__)
     solution = getattr(module, "Solution")
-    return solution(join_path(module_path, "resources"), testing)
+    return solution(join_path(module_path, "resources"), testing, *args, **kwargs)
 
 
 def main():
     opts = get_opts()
-    solution = build_solution(opts.DAY, opts.PART, opts.test or opts.check)
+    args = [_ for _ in opts.args if "=" not in _]
+    kwargs = {_.split('=')[0]: _.split('=')[1] for _ in opts.args if "=" in _}
+    solution = build_solution(opts.DAY, opts.PART, opts.test or opts.check, *args, **kwargs)
 
     def show(result, detail=None):
         print(f"AoC[2020.{opts.DAY}.{opts.PART}] -> {result}")

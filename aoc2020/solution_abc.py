@@ -6,7 +6,7 @@ from os.path import join as join_path
 
 class SolutionABC(ABC):
 
-    def __init__(self, resource_path: str, testing: bool = False):
+    def __init__(self, resource_path: str, testing: bool = False, *args, **kwargs):
         self.testing = testing
         self.resource_path = resource_path
 
