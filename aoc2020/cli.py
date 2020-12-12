@@ -26,8 +26,8 @@ def build_solution(day, part, testing=False, *args, **kwargs) -> SolutionABC:
 
 def main():
     opts = get_opts()
-    args = [_ for _ in opts.args if "=" not in _]
-    kwargs = {_.split('=')[0]: _.split('=')[1] for _ in opts.args if "=" in _}
+    args = [_ for _ in opts.args if "=" not in _] if opts.args else []
+    kwargs = {_.split('=')[0]: _.split('=')[1] for _ in opts.args if "=" in _} if opts.args else {}
     solution = build_solution(opts.DAY, opts.PART, opts.test or opts.check, *args, **kwargs)
 
     def show(result, detail=None):

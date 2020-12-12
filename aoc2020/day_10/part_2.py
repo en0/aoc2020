@@ -1,5 +1,5 @@
 from collections import deque
-from itertools import chain
+from functools import reduce
 from aoc2020 import *
 
 
@@ -40,14 +40,39 @@ class Graph:
         dvi = self._vertex_map[dst]
         self._matrix[svi][dvi] = True
 
-    def neighbors(self, v):
+    def child_count(self, v):
+        return len(list(self.children(v)))
+
+    def parent_count(self, v):
+        return len(list(self.parents(v)))
+
+    def children(self, v):
         return map(lambda e: self._vertices[e[0]], filter(lambda e: e[1], enumerate(self._matrix[self._vertex_map[v]])))
 
+    def parents(self, v):
+        return map(lambda e: self._vertices[e[0]], filter(lambda e: e[1][self._vertex_map[v]], enumerate(self._matrix)))
+
     def dumps(self):
-        lines = ["    " + " ".join(map(lambda s: str(s).zfill(3), self._vertices))]
+        lines = []
         for i, row in enumerate(self._matrix):
-            lines.append(f"{str(self._vertices[i]).zfill(3)} " + " ".join([' X ' if _ else ' - ' for _ in row]))
+            lines.append(", ".join(['1' if _ else '0' for _ in row]))
         return "\n".join(lines)
+        #lines = ["    " + " ".join(map(lambda s: str(s).zfill(3), self._vertices))]
+        #for i, row in enumerate(self._matrix):
+            #lines.append(f"{str(self._vertices[i]).zfill(3)} " + " ".join([' X ' if _ else ' - ' for _ in row]))
+        #return "\n".join(lines)
+
+    def count_all_paths(self, start, end):
+        count, queue = 0, deque(self.children(start))
+        while queue:
+            current = queue.pop()
+            if current == end:
+                count += 1
+            elif current > end:
+                continue
+            for neighbor in self.children(current):
+                queue.appendleft(neighbor)
+        return count
 
 
 class Solution(SolutionABC):
@@ -70,12 +95,34 @@ class Solution(SolutionABC):
     def solve(self) -> any:
         adapters = [0] + sorted(self.resource_lines(self._file, int))
         start, end, count = 0, adapters[-1], 0
+        print("[+] Constructing graph...")
         graph = self.make_graph(adapters)
-        queue = deque(graph.neighbors(start))
-        while queue:
-            current = queue.pop()
-            if current == end:
-                count += 1
-            for neighbor in graph.neighbors(current):
-                queue.appendleft(neighbor)
-        return count
+        graph.add_edge(end, end+3)
+        end += 3
+        print("    COMPLETE")
+
+        print("[+] Searching path...")
+        rp = 1
+        last = start
+        for v in sorted(graph):
+            if v == 0:
+                continue
+            if graph.child_count(v) != 1:
+                continue
+            c = next(graph.children(v))
+            if graph.parent_count(c) != 1:
+                continue
+            print("[-] FOUND CLUMP: ", last, "->", v)
+            count = graph.count_all_paths(last, v)
+            rp *= count
+            last = v
+        print("    COMPLETE")
+
+        return rp
+
+        rp = 1
+        for _start, _end in clumps:
+            print(f"[+] Counting Clump {_start} -> {_end}")
+            rp *= graph.count_all_paths(_start, _end)
+
+        return rp
