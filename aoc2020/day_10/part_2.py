@@ -119,10 +119,3 @@ class Solution(SolutionABC):
         print("    COMPLETE")
 
         return rp
-
-        rp = 1
-        for _start, _end in clumps:
-            print(f"[+] Counting Clump {_start} -> {_end}")
-            rp *= graph.count_all_paths(_start, _end)
-
-        return rp
