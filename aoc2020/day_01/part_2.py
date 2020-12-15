@@ -1,23 +1,16 @@
 from aoc2020 import *
+from .part_1 import Solution as Part1
 
 
-class Solution(SolutionABC):
-
+class Solution(Part1):
     expected = 241861950
 
     def solve(self) -> any:
-        target = 2020
-        values = sorted(self.resource_lines("input", int))
-        for l in range(len(values)):
-            i = l + 1
-            j = len(values) - 1
-            while i < j:
-                actual = values[l] + values[i] + values[j]
-                if actual == target:
-                    return values[l] * values[i] * values[j]
-                elif actual < target:
-                    i += 1
-                elif actual > target:
-                    j -= 1
+        return self.find_sum_of_3(2020, list(self.resource_lines("input", int)))
 
-        raise NoSolutionError()
+    def find_sum_of_3(self, target, data):
+        for n in data:
+            x = self.find_sum(target-n, data)
+            if x is not None:
+                return x * n
+        return None
