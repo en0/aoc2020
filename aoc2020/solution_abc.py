@@ -10,10 +10,12 @@ class SolutionABC(ABC):
         self.testing = testing
         self.resource_path = resource_path
 
+    def get_resource_name(self, name: str) -> str:
+        return f"test-{name}" if self.testing else name
+
     @contextmanager
     def load_resource(self, name: str, mode: str = 'r') -> ContextManager[IO]:
-        resource_name = f"test-{name}" if self.testing else name
-        path = join_path(self.resource_path, resource_name)
+        path = join_path(self.resource_path, self.get_resource_name(name))
         try:
             fd = open(path, mode)
             yield fd
