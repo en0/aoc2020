@@ -28,6 +28,16 @@ class SolutionABC(ABC):
             for line in fd:
                 yield xfrm(line.rstrip('\n'))
 
+    @classmethod
+    def read_until(cls, fp, predicate=None, xfrm=None):
+        predicate = predicate or (lambda s: False)
+        xfrm = xfrm or (lambda x: x)
+        for line in fp:
+            ln = line.rstrip("\n")
+            if predicate(ln):
+                break
+            yield xfrm(ln)
+
     def check(self):
         return self.expected == self.solve()
 
