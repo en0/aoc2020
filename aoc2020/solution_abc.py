@@ -30,13 +30,17 @@ class SolutionABC(ABC):
 
     @classmethod
     def read_until(cls, fp, predicate=None, xfrm=None):
-        predicate = predicate or (lambda s: False)
+        predicate = predicate or (lambda s: s == "")
         xfrm = xfrm or (lambda x: x)
         for line in fp:
             ln = line.rstrip("\n")
             if predicate(ln):
                 break
             yield xfrm(ln)
+
+    def read_line(self, fp, xfrm=None):
+        _xfrm = xfrm or (lambda x: x)
+        return _xfrm(fp.readline().rstrip("\n"))
 
     def check(self):
         return self.expected == self.solve()
